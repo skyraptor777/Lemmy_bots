@@ -13,11 +13,90 @@
 // limitations under the License.
 
 import express, {Express, Request, Response} from 'express';
-const PORT = process.env.PORT || 8080;
+import 'dotenv/config'
+import LemmyBot , { Vote }  from 'lemmy-bot';
+
+
+const PORT = process.env.PORT || 8021;
 const app: Express = express();
 
+const lemmywinx = new LemmyBot({
+  instance: 'lemmy.world',
+  credentials: {
+    username: process.env.USERNAME || "",
+    password: process.env.PASSWORD || ""
+  },
+  connection: {
+    minutesUntilReprocess : 10
+  },
+  federation:{
+    allowList: [
+      {
+        instance: 'lemmy.world',
+        communities: ['sky_7_bot_testing']
+      }
+    ]
+  },
+  handlers: {
+    post: (res) =>{
+      console.log(res.postView.post.name);
+    },
+  /*  mention : ({
+      mentionView:
+        {
+            comment: {creator_id, id}
+          },
+          botActions: { voteComment }
+        }) => {
+        voteComment(Vote.Upvote);
+      }
+   */
+    mention : ({
+      mentionView:
+        {
+            comment: {creator_id, id:comment_id, content}
+            , post: {id}
+          },
+          botActions: {createComment, voteComment}
+
+        }) => {
+          createComment({
+            "content": "Hi there, Lemmywinx reporting for duty",
+            "postId": id,
+            "parentId" : comment_id
+          })
+        console.log(creator_id, id, content);
+      }
+   
+
+      //  mention : (res) => {
+
+      
+//    console.log(res.mentionView.comment.content)
+    
+ // }
+        }
+
+      
+    
+      
+      
+
+    
+
+
+  
+     
+
+
+
+
+});
+lemmywinx.start();
+
 app.get('/', (req: Request, res: Response) => {
-  res.send('🎉 Hello TypeScript! 🎉');
+  //res.send('🎉 Hello TypeScript! 🎉');
+  res.send('the user name of the bot is:- '+process.env.USERNAME);
 });
 
 const server = app.listen(PORT, () => {
