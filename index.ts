@@ -39,8 +39,9 @@ const lemmywinx = new LemmyBot({
         communities: ['sky_7_bot_testing']
       }
     ]
-  },
-  handlers: {
+  }
+  
+  ,handlers: {
     post: (res) => {
       console.log(res.postView.post.name);
     },
