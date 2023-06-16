@@ -23,10 +23,13 @@
   },
   "dependencies": {
     "@typescript-eslint/parser": "^5.59.0",
+    "axios": "^1.4.0",
     "dotenv": "^16.1.4",
     "express": "^4.16.3",
-    "json-to-markdown-table": "^1.0.0",
-    "lemmy-bot": "^0.3.9"
+    "json2md": "^2.0.0",
+    "lemmy-bot": "^0.3.9",
+    "moment": "^2.29.4",
+    "tablemark": "^3.0.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
