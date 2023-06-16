@@ -91,19 +91,14 @@ lemmywinx.start();
 
 
 
-app.get('/', (req: Request, res: Response) => {
-  //res.send('🎉 Hello TypeScript! 🎉');
-
-  res.send('the user name of the bot is:- ' + process.env.USERNAME);
-});
-
 
 
  // ======================================
   // Update Fixtures
   // ======================================
   
-  
+//update_fixture_table()
+
 function update_fixture_table() {
   let form: Login = {
     username_or_email: process.env.USERNAME || "",
@@ -149,11 +144,9 @@ function update_fixture_table() {
 // End Update Fixtures
 // ======================================
 
-app.get('/granger', (req: Request, res: Response) => {
-  //res.send('🎉 Hello TypeScript! 🎉');
+app.get('/', (req: Request, res: Response) => {
   res.send('the user name of the bot is:- ' + process.env.USERNAME);
 });
-
 
 const server = app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
