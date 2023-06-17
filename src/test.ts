@@ -21,4 +21,14 @@ let leeway = new Promise<string>((resolve, reject) => {setTimeout(() => {
 async function letter (){
     return await james()
 }
-letter()
+
+    
+var cron = require('node-cron');
+
+cron.schedule('* * * * *', async () => {
+    console.log('running a task every minute');
+},{
+    timezone: 'Europe/London'
+    , scheduled : true
+});
+         

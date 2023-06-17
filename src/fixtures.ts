@@ -13,6 +13,7 @@ interface Fixture_list {
 } 
 const ID_FOR_UNITED_API = 33
 const API_KEY_FOR_RAPID = '5jmYs3r2MTmshlSTY0CJbRNCQ0typ1WOIWEjsnfoTt8iWvZgCz';
+//const API_KEY_FOR_RAPID = '5jmYs3r2MTmshlSTY0CJbRNCQ0typ1WOIWEjsnfoTt8iWvZgCq'; //fake key
 const RAPID_API_HOST = 'api-football-v1.p.rapidapi.com';
 const BASE_URL_FOR_API = 'https://'+RAPID_API_HOST+'/v3/';
 var output_to_export = ''
@@ -514,6 +515,7 @@ function format_fixtures (data: any){
             //todo add more leagues info
         }
         //console.log (current_fixture)
+        let date_for_sheets = moment(fixt.fixture.date, moment.ISO_8601). format('YYYY-DD-MM');
         fix_list.push(current_fixture)
 
         })
