@@ -64,7 +64,7 @@ async function access_sheets(
   return await sheets
 }
 
-
+/*
 function get_some_values_from_google_sheets (sheets){
   console.log(`Start of get value function value is ${sheets}`)
   sheets.then(value => 
@@ -81,9 +81,10 @@ function get_some_values_from_google_sheets (sheets){
      })
     
   
-}
+})
 
 }
+*/
 
 const lemmywinx = new LemmyBot({
   instance: 'lemmy.world',
@@ -257,8 +258,10 @@ cron.schedule('* 9 * * *', async () => {
   
 },{
     timezone: 'Europe/London'
-    , scheduled : false
+    , scheduled : true
 });
+
+
             
 // =========================================
 // End of Cron 
