@@ -103,7 +103,7 @@ const lemmywinx = new LemmyBot({
       }
     ]
   },
-  dbFile :'/home/container/chi.db'
+  dbFile :'/home/container/chi.db',
 
    handlers: {
     post: (res) => {
@@ -242,7 +242,7 @@ function create_daily_posts (){
     
 var cron = require('node-cron');
 
-cron.schedule('* 9 * * *', async () => {
+cron.schedule('1 9 * * *', async () => {
     update_fixture_table()
     console.log('Run the Daily thread stuff; Friday special Free talk friday');
     //let login_response = await js_client_login('sky_7_bot_testing')
