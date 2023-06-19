@@ -27,7 +27,7 @@ const {google} = require('googleapis');
 
 
 let jwt = ''
-const PORT = process.env.PORT || 8021;
+const PORT = process.env.PORT || 25557;
 const app: Express = express();
 const post_template = {
   name: "🍻 The Lounge: Daily Discussion Thread",
@@ -88,9 +88,9 @@ function get_some_values_from_google_sheets (sheets){
 
 const lemmywinx = new LemmyBot({
   instance: 'lemmy.world',
-  credentials: {
-    username: process.env.USERNAME || "",
-    password: process.env.PASSWORD || ""
+  credentials: {    
+    username:  "__lemmywinks_bot" || process.env.USERNAME ,
+    password: process.env.PASSWORD || "XYzbU1IhAuW$D%N"
   },
   connection: {
     minutesUntilReprocess: 10
@@ -103,6 +103,7 @@ const lemmywinx = new LemmyBot({
       }
     ]
   },
+  dbFile :'/home/container/chi.db'
 
    handlers: {
     post: (res) => {
@@ -151,9 +152,9 @@ lemmywinx.start();
 
 //
 async function js_client_login (community_name : string){
-  let form: Login = {
-    username_or_email: process.env.USERNAME || "",
-    password: process.env.PASSWORD || ""
+  let form: Login = {    
+    username_or_email:  "__lemmywinks_bot" || process.env.USERNAME ,
+    password: process.env.PASSWORD || "XYzbU1IhAuW$D%N"
   }
 
   const login_response = new Promise((resolve, reject) => {
