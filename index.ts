@@ -44,25 +44,7 @@ let client: LemmyHttp = new LemmyHttp(baseURL);
  */
 const {GoogleAuth} = require('google-auth-library');
 
-/**
- * Acquire a client, and make a request to an API that's enabled by default.
- */
-async function access_sheets(
-  // Full path to the sevice account credential
-  keyFile = process.env.GOOGLE_APPLICATION_CREDENTIALS
-) {
-  const auth = new GoogleAuth({
-    keyFile: keyFile,
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"]
-  })  ;
-  const sheets = google.sheets({version: 'v4', auth});
-  const res = await sheets.spreadsheets.values.get({
-    spreadsheetId: '1-JfjQB1m1EjsrbP3K4cW1r9rQT6d0Ztnvm5T1XRj_yk',
-    range: 'fixtures!A1:B1',
-  });
-  //console.log(res)
-  return await sheets
-}
+
 
 /*
 function get_some_values_from_google_sheets (sheets){
@@ -88,9 +70,9 @@ function get_some_values_from_google_sheets (sheets){
 
 const lemmywinx = new LemmyBot({
   instance: 'lemmy.world',
-  credentials: {    
+  credentials: {
     username:  "__lemmywinks_bot" || process.env.USERNAME ,
-    password: process.env.PASSWORD || "XYzbU1IhAuW$D%N"
+    password: "XYzbU1IhAuW$D%N"
   },
   connection: {
     minutesUntilReprocess: 10
@@ -103,7 +85,7 @@ const lemmywinx = new LemmyBot({
       }
     ]
   },
-  dbFile :'/home/container/chi.db',
+    dbFile :'/home/container/chi.db',
 
    handlers: {
     post: (res) => {
@@ -152,9 +134,11 @@ lemmywinx.start();
 
 //
 async function js_client_login (community_name : string){
-  let form: Login = {    
+  let form: Login = {
+ 
     username_or_email:  "__lemmywinks_bot" || process.env.USERNAME ,
-    password: process.env.PASSWORD || "XYzbU1IhAuW$D%N"
+    password: "XYzbU1IhAuW$D%N"
+  
   }
 
   const login_response = new Promise((resolve, reject) => {
@@ -242,7 +226,7 @@ function create_daily_posts (){
     
 var cron = require('node-cron');
 
-cron.schedule('1 9 * * *', async () => {
+cron.schedule('0 9 * * *', async () => {
     update_fixture_table()
     console.log('Run the Daily thread stuff; Friday special Free talk friday');
     //let login_response = await js_client_login('sky_7_bot_testing')
@@ -272,7 +256,7 @@ cron.schedule('1 9 * * *', async () => {
 
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('the user name of the bot is:- ' + process.env.USERNAME);
+  res.send('the user name of the bot is:- ' + process.env.PASSWORD);
 });
 
 const server = app.listen(PORT, () => {
