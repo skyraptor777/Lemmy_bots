@@ -32,6 +32,7 @@ let env_vars = {
     USERNAME:''
     , PASSWORD:''
     , PORT : 0
+    , JDBC_CONNECTION_STRING : ''
 }
 let env = 'TEST'
 const post_template = {
@@ -108,7 +109,7 @@ const lemmywinx = new LemmyBot({
       }
     ]
   },
-    dbFile :'/home/container/chi.db',
+    dbFile :path.resolve(__dirname, 'chi.db');,
 
    handlers: {
     post: (res) => {
@@ -199,8 +200,8 @@ function update_fixture_table() {
       let edit_community_form: EditCommunity = {
         auth: jwt,
         community_id: community_id,
-        description: reddevils_side_bar_text + ' 📅  **Upcoming Fixtures**
-\n' + value
+        description: `${reddevils_side_bar_text}📅  **Upcoming Fixtures**
+\n  ${value}`
       }
       setTimeout(function () {
         client.editCommunity(edit_community_form);
@@ -209,7 +210,7 @@ function update_fixture_table() {
   }
  
 
-//setTimeout(function () {update_fixture_table()}, 5000) // giving it some time to login
+setTimeout(function () {update_fixture_table()}, 5000) // giving it some time to login
 
 
 

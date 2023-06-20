@@ -31,6 +31,7 @@
     "json2md": "^2.0.0",
     "lemmy-bot": "^0.3.9",
     "moment": "^2.29.4",
+    "mysql": "^2.18.1",
     "node-cron": "^3.0.2",
     "tablemark": "^3.0.0"
   },
