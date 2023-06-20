@@ -1,6 +1,6 @@
 {
-  "name": "appengine-typescript",
-  "description": "An example TypeScript app running on Google App Engine.",
+  "name": "Lemmywinks",
+  "description": "Lemmy Bot",
   "version": "0.0.1",
   "private": true,
   "license": "Apache Version 2.0",

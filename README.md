@@ -1,38 +1,17 @@
-# App Engine TypeScript sample
+# Lemmywinks Bot for Lemmy Reddevils 
+## Overview
+After the unceremonious actions over at Reddit, this is a bot to help moderate the subreddit. The bot is hosted on a website meant for discord bots. This is due to its small size and those websites allow websockets, which the API relies on to get mentions etc. 
 
-This sample provides an example of how to compile TypeScript files while
-deploying to App Engine.
+This is quite primitave right now. The list of planned features are as follows. Anything that is checked is completed to a certain extent: 
 
-The `gcp-build` NPM script is used to trigger the TypeScript compilation
-process. This step happens automatically when deploying to App Engine, but must
-be performed manually when developing locally.
+[ ] Daily Discussion Posts & Free talk friday 
+[ ] Match Threads 
+    [ ] Live lineup support 
+    [ ] Live Score 
+    [ ] Text Match commentary 
+[ ] Auto post journalist posts
+[ ] Auto report unreliable/bad posts 
+[ ] Toxicity check 
+[ ] Goal Bot
 
-## Setup
-
-Install dependencies:
-
-   npm install
-
-## Running locally
-
-1. Perform the build step:
-
-    npm run gcp-build
-
-1. Run the completed program
-
-    npm start
-
-## Deploying to App Engine
-
-Deploy your app:
-
-    npm run deploy
-
-By default, this application deploys to [App Engine Standard][appengine]. _(Recommended)_
-Deploy to App Engine Flexible by [modifying `app.yaml`][app_yaml].
-
-[appengine]: https://cloud.google.com/appengine/docs/standard/nodejs
-[app_yaml]: https://cloud.google.com/appengine/docs/flexible/nodejs/configuring-your-app-with-app-yaml
-[tutorial]: https://cloud.google.com/appengine/docs/standard/nodejs/quickstart
-[contributing]: https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/main/CONTRIBUTING.md
+Lots of features, not a lot of time. But we will get through it. 
