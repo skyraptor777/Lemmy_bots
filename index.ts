@@ -20,31 +20,54 @@ import { describe } from 'node:test';
 import { get_list_of_fixtures } from './src/fixtures';
 import { scheduler } from 'timers/promises';
 import { createProgram } from 'typescript';
-
-const {google} = require('googleapis');
+import * as fs from 'fs';
 
 //import createTable from  'json-to-markdown-table'
-
-
-let jwt = ''
-const PORT = process.env.PORT || 25557;
+const path = require('path')
 const app: Express = express();
-const post_template = {
-  name: "🍻 The Lounge: Daily Discussion Thread",
-  community_id: 9451
-  , body: "This is a post from Lemmywinkx u/frostbot"
-  ,auth : ''
-
-}
+let jwt = ''
 const baseURL = 'Https://lemmy.world';
 let client: LemmyHttp = new LemmyHttp(baseURL);
+let env_vars = {
+    USERNAME:''
+    , PASSWORD:''
+    , PORT : 0
+}
+let env = 'TEST'
+const post_template = {
+  		name: "🍻 The Lounge: Daily Discussion Thread"
+  		,community_id: 9451
+ 		 , body: "Howdy folks! Hope everyone is having a good day. This is the daily discussion thread to talk about all things United or otherwise. \n\n This is a post from Lemmywinkx_bot"
+ 		 ,auth : ''
+	}
+const reddevils_side_bar_text =  'All things Manchester United. \n'+        '\n' +
+        'New to the community? Come say hi in the [Welcome thread.](https://lemmy.world/post/47358)\n' +        '\n' +'Got any suggestions on how we can improve and grow as a community? [Let us know!](https://lemmy.world/post/56208)\n' +
+        '\n' +
+        'Basic rules:\n' +
+        '\n' +
+        '1. Fuck the Glazers\n' +
+        '2. Be civil to each other\n' +
+        '3. No non-Manchester United/football content. Non-United content is allowed if it affects United in some way. Otherwise, use the Weekly Discussion Thread\n' +
+        '4. Fuck the Glazers\n' +
+        '5. Posting news from other social media sites is allowed, but stick to reliable sources (may implement a tier system in future)\n' +
+        '6. Keep it legal - no streams please :)\n' +
+        '7. Have fun!\n' +
+        '8. Fuck the Glazers\n';
+let community_id = 9451
 
-/**
- * Import the GoogleAuth library, and create a new GoogleAuth client.
- */
-const {GoogleAuth} = require('google-auth-library');
+let PORT = 0
+try {
+  const raw_env_vars = fs.readFileSync(path.resolve(__dirname, 'env.json'), 'utf-8');
+  env_vars = JSON.parse(raw_env_vars);
+	PORT = env_vars.PORT || 25557;
+    if (env_vars.USERNAME =="__lemmywinks_bot"){
+        env = 'PROD'; //should not be needed but just in case
+        community_id = 2317 // community id for c/RedDevils
+    }
 
-
+} catch (err) {
+  console.error(err);
+}
 
 /*
 function get_some_values_from_google_sheets (sheets){
@@ -71,8 +94,8 @@ function get_some_values_from_google_sheets (sheets){
 const lemmywinx = new LemmyBot({
   instance: 'lemmy.world',
   credentials: {
-    username:  "__lemmywinks_bot" || process.env.USERNAME ,
-    password: "XYzbU1IhAuW$D%N"
+    username:  env_vars.USERNAME ,
+    password: env_vars.PASSWORD
   },
   connection: {
     minutesUntilReprocess: 10
@@ -81,7 +104,7 @@ const lemmywinx = new LemmyBot({
     allowList: [
       {
         instance: 'lemmy.world',
-        communities: ['sky_7_bot_testing']
+        communities: ['sky_7_bot_testing', 'reddevils']
       }
     ]
   },
@@ -136,39 +159,36 @@ lemmywinx.start();
 async function js_client_login (community_name : string){
   let form: Login = {
  
-    username_or_email:  "__lemmywinks_bot" || process.env.USERNAME ,
-    password: "XYzbU1IhAuW$D%N"
-  
+    username_or_email:  env_vars.USERNAME ,
+    password: env_vars.PASSWORD
   }
+  
+  
 
   const login_response = new Promise((resolve, reject) => {
     resolve(client.login(form));
   });
   let community_id_form: GetCommunity = { name: community_name }
-  /*const community_id_response = new Promise((resolve, reject) =>
+  const community_id_response = new Promise((resolve, reject) =>
   {
     resolve(client.getCommunity(community_id_form))
   }
   ) 
-  community_id_response.then(value => {console.log(value)})
+  //community_id_response.then(value => {console.log(value)})
   /* Id was 9451 of the tet site 
   */
   const response = await login_response.then((value: any) => {
     jwt = value.jwt;
-    console.log("the token is : " + jwt);
     Promise.resolve(0); 
 })
 return response
 }
-
+//js_client_login('reddevils')
 
 
 // ======================================
 // Update Fixtures
 // ======================================
-
-//update_fixture_table()
-
 function update_fixture_table() {
 
     const new_md_output = new Promise<string>((resolve, reject) => {
@@ -178,15 +198,20 @@ function update_fixture_table() {
 
       let edit_community_form: EditCommunity = {
         auth: jwt,
-        community_id: 9451,
-        description: value
+        community_id: community_id,
+        description: reddevils_side_bar_text + ' 📅  **Upcoming Fixtures**
+\n' + value
       }
       setTimeout(function () {
         client.editCommunity(edit_community_form);
-        console.log(`Value of the table is\n+++++++++++++++\n${value}`);
       }, 5000)
     })
   }
+ 
+
+//setTimeout(function () {update_fixture_table()}, 5000) // giving it some time to login
+
+
 
 
 // ======================================
@@ -233,7 +258,7 @@ cron.schedule('0 9 * * *', async () => {
     //console.log('Login response was '+login_response)
     let test = 'sky_7_bot_testing'
     let login_response = new Promise ((resolve, reject) =>
-      {return resolve(js_client_login('sky_7_bot_testing'))
+      {return resolve(js_client_login(env == "PROD"?'reddevils':'sky_7_bot_testing'))
       }).then((value) => {
       create_daily_posts()
       return (0)
@@ -256,7 +281,7 @@ cron.schedule('0 9 * * *', async () => {
 
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('the user name of the bot is:- ' + process.env.PASSWORD);
+  res.send('the user name of the bot is:- ' + env_vars.USERNAME);
 });
 
 const server = app.listen(PORT, () => {
