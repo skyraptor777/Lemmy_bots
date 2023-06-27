@@ -32,7 +32,9 @@
     "lemmy-bot": "^0.3.9",
     "moment": "^2.29.4",
     "mysql": "^2.18.1",
+    "mysql2": "^3.4.0",
     "node-cron": "^3.0.2",
+    "sequelize": "^6.32.1",
     "tablemark": "^3.0.0"
   },
   "devDependencies": {

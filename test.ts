@@ -1,28 +1,71 @@
 import { describe } from 'node:test';
-import { get_list_of_fixtures } from './src/fixtures';
 import { scheduler } from 'timers/promises';
 import { createProgram } from 'typescript';
 import * as fs from 'fs';
 
-let mysql = require('mysql')
 const path = require('path')
 let is_db_connected = false
-
 let env_vars = {
     USERNAME:''
     , PASSWORD:''
     , PORT : 0
     , JDBC_CONNECTION_STRING : ''
 }
-let jdbc_connection = ''
 
+let jdbc_connection = ''
 try {
-    const raw_env_vars = fs.readFileSync(path.resolve(__dirname, 'env.json'), 'utf-8');
+    const raw_env_vars = fs.readFileSync(path.resolve(__dirname, 'src/env.json'), 'utf-8');
     env_vars = JSON.parse(raw_env_vars);
     
   } catch (err) {
     console.error(err);
   }
+
+  jdbc_connection = env_vars.JDBC_CONNECTION_STRING
+  console.log(jdbc_connection)
+  const { Sequelize, DataTypes } = require('sequelize');
+  const sequelize = new Sequelize(jdbc_connection, {dialect: 'mysql'});
+    
+  const daily_posts = sequelize.define('daily_posts_test', {
+    post_type: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  post_name: {
+    type: DataTypes.STRING
+  }
+  , community_id: {type: DataTypes.INTEGER}
+  , post_date_number: {type: DataTypes.BIGINT, allowNull : false}
+  , post_id: {type: DataTypes.BIGINT}
+
+}, {
+    tableName: 'daily_posts_log_test'
+  // Other model options go here
+});
+
+
+
+const utd_fixtures = sequelize.define('utd_fixtures_test', {
+    match_date_number: {type: DataTypes.BIGINT, primaryKey: true}
+    , home_team: {type: DataTypes.STRING}
+    , away_team: {type: DataTypes.STRING}
+    , venue: {type: DataTypes.STRING}
+    , is_played: {type: DataTypes.BOOLEAN}
+    , home_goals: {type: DataTypes.INTEGER}
+    , away_goals: {type: DataTypes.INTEGER}
+    , league_name : {type: DataTypes.STRING}
+    , fixture_date: {type:DataTypes.DATE} 
+}, {
+    tableName: 'utd_fixtures_test'
+  // Other model options go here
+});
+
+
+
+daily_posts.sync({force:true})
+
+
+
 //sample API output to work with Delete this in production
 let sample_api_output = {
     "get": "fixtures",
@@ -379,10 +422,7 @@ let sample_api_output = {
         }
     ]
 }
-
-
-
-  interface Fixture_list {
+interface Fixture_list {
     [key:string]: string;
     comp: string;
     opponent: string;
@@ -393,22 +433,12 @@ let sample_api_output = {
 } 
 
 
-jdbc_connection = env_vars.JDBC_CONNECTION_STRING
-console.log(jdbc_connection)
 
-var con = mysql.createConnection(jdbc_connection);
 
 
 function format_fixtures (data: any){
     let fix_list: Fixture_list[] = []
     //let working_copy =   sample_api_output
-
-    con.connect(function(err) {
-        if (err) throw err;
-        console.log("Connected!");
-        is_db_connected = true;
-  
-         });
     let insert_string = "insert ignore into `upcoming_fixtures`(`match_date_number`, `home_team`, `away_team`, `venue`, `played`, `home_team_score`, `away_team_score`, `competition`, `home_lineup`, `away_lineup`, `match_date_time`)  values"
 	let working_copy =   data || sample_api_output
        // console.log(data.data.response)
@@ -442,19 +472,10 @@ function format_fixtures (data: any){
         fix_list.push(current_fixture)
 
         })
-        console.log(insert_string)
-        
+        console.log(insert_string)        
         insert_string= insert_string.slice(0, insert_string.length-2)
-        con.query(insert_string, function(error, results, fields) {
-            if (error) throw error
-
-        })
-        con.end()
-        return fix_list;
-        
     }
-let fix_list = {}
 
-fix_list = format_fixtures(sample_api_output)    
+//let fix_list = format_fixtures(sample_api_output)    
  
 
