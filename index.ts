@@ -15,9 +15,9 @@
 import express, { Express, Request, Response } from 'express';
 import 'dotenv/config'
 import LemmyBot, { Vote, BotActions, BotTask } from 'lemmy-bot';
-import { Login, LemmyHttp, GetCommunity, EditCommunity, CreatePost } from 'lemmy-js-client';
+import { Login, LemmyHttp, GetCommunity, EditCommunity, CreatePost, FeaturePost } from 'lemmy-js-client';
 import { describe } from 'node:test';
-import { get_list_of_fixtures } from './src/fixtures';
+import { get_list_of_fixtures } from './fixtures';
 import { scheduler } from 'timers/promises';
 import { createProgram } from 'typescript';
 import * as fs from 'fs';
@@ -55,21 +55,24 @@ const reddevils_side_bar_text =  'All things Manchester United. \n'+        '\n'
         '7. Have fun!\n' +
         '8. Fuck the Glazers\n';
 let community_id = 9451
+const { Sequelize, DataTypes } = require('sequelize');
 
 let PORT = 0
 try {
-  const raw_env_vars = fs.readFileSync(path.resolve(__dirname, 'env.json'), 'utf-8');
+  const raw_env_vars = fs.readFileSync(path.resolve(__dirname, 'src/env.json'), 'utf-8');
   env_vars = JSON.parse(raw_env_vars);
 	PORT = env_vars.PORT || 25557;
     if (env_vars.USERNAME =="__lemmywinks_bot"){
         env = 'PROD'; //should not be needed but just in case
-        community_id = 2317 // community id for c/RedDevils
+        community_id = 9451//2317 // community id for c/RedDevils
+
     }
 
 } catch (err) {
   console.error(err);
 }
 
+const jdbc_connection = env_vars.JDBC_CONNECTION_STRING
 /*
 function get_some_values_from_google_sheets (sheets){
   console.log(`Start of get value function value is ${sheets}`)
@@ -109,7 +112,7 @@ const lemmywinx = new LemmyBot({
       }
     ]
   },
-    dbFile :path.resolve(__dirname, 'chi.db');,
+    dbFile :path.resolve(__dirname, 'chi.db'),
 
    handlers: {
     post: (res) => {
@@ -190,10 +193,10 @@ return response
 // ======================================
 // Update Fixtures
 // ======================================
-function update_fixture_table() {
+function update_fixture_table(sequelize) {
 
     const new_md_output = new Promise<string>((resolve, reject) => {
-      resolve(get_list_of_fixtures());
+      resolve(get_list_of_fixtures(sequelize));
     });
     new_md_output.then(value => {
 
@@ -207,29 +210,46 @@ function update_fixture_table() {
         client.editCommunity(edit_community_form);
       }, 5000)
     })
+    return(new_md_output)
   }
  
-
-setTimeout(function () {update_fixture_table()}, 5000) // giving it some time to login
-
-
-
 
 // ======================================
 // End Update Fixtures
 // ======================================
 
 // Daily Posts
-function create_daily_posts (){
+function create_daily_posts (sequelize){
   let post_details = post_template
   const moment = require('moment'); // require
   let utc_date_as_object = moment().utc().toObject()
   let utc_day_of_week =  moment().utc().day();
   // to do If it is match day if ()
+  let db_instance_name = env == "PROD"?'daily_posts':'daily_posts_test'
+  let table_name = env == "PROD"?'daily_posts_log':'daily_posts_log_test'
+      
+  const daily_posts = sequelize.define(db_instance_name, {
+    post_type: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  post_name: {
+    type: DataTypes.STRING
+  }
+  , community_id: {type: DataTypes.INTEGER}
+  , post_date_number: {type: DataTypes.BIGINT, allowNull : false}
+
+}, {
+    tableName: table_name
+  // Other model options go here
+});
+//sequelize.sync({force:true})
+  let post_type = 'The Lounge'
   if (utc_day_of_week == 5) //check if its friday
     {
       post_details.name = "💬 Free Talk Friday"
       post_details.body = "It's that time of the week!! What's the craic?"
+      post_type = "Free Talk Friday"
     }
   else{
     post_details.name = "🍻 The Lounge: Daily Discussion Thread"
@@ -237,8 +257,32 @@ function create_daily_posts (){
  
   }
   post_details.auth = jwt
+  post_details.community_id = community_id
   let new_post: CreatePost = post_details
-  client.createPost(new_post)
+  let post_id = 0
+  let is_posted = new Promise((resolve, reject) => {
+    resolve(client.createPost(new_post))
+    
+  }
+  ).then(value => {
+    post_id = value.post_view.post.id ;console.log(post_id)
+    let feature_new_post: FeaturePost = {auth: jwt, featured : true, feature_type: 'Community', post_id: value.post_view.post.id}
+    client.featurePost(feature_new_post)
+    
+
+    Promise.resolve(
+        daily_posts.create(
+          {
+            post_type: post_type
+            , post_name:post_details.name
+            , community_id : community_id
+            , post_date_number: moment().utc().format('YYYYDDMM')
+            , post_id : post_id
+          }
+          )
+          )
+})
+  return (is_posted)
 }
 
 //
@@ -249,11 +293,11 @@ function create_daily_posts (){
 //
 // =========================================
 // Daily Cron 
-    
-var cron = require('node-cron');
-
-cron.schedule('0 9 * * *', async () => {
-    update_fixture_table()
+async function daily_cron () {
+  const { Sequelize, DataTypes } = require('sequelize');
+  const sequelize = new Sequelize(jdbc_connection, {dialect: 'mysql'});
+  console.log("this is running");
+  let update_everything = new Promise ((resolve, reject) =>{ resolve(update_fixture_table(sequelize))}).then(value => {
     console.log('Run the Daily thread stuff; Friday special Free talk friday');
     //let login_response = await js_client_login('sky_7_bot_testing')
     //console.log('Login response was '+login_response)
@@ -261,13 +305,19 @@ cron.schedule('0 9 * * *', async () => {
     let login_response = new Promise ((resolve, reject) =>
       {return resolve(js_client_login(env == "PROD"?'reddevils':'sky_7_bot_testing'))
       }).then((value) => {
-      create_daily_posts()
-      return (0)
+      create_daily_posts(sequelize).then(value => {console.log('Connection Closed')})
     })
-  // Check if its match day
+  }
+    )
+    Promise.resolve(update_everything)
+}
 
-  
-},{
+
+
+var cron = require('node-cron');
+cron.schedule('* * * * *', function() {daily_cron()} 
+  // Check if its match day
+,{
     timezone: 'Europe/London'
     , scheduled : true
 });
