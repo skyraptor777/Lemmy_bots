@@ -345,7 +345,7 @@ async function daily_cron () {
 
 
 var cron = require('node-cron');
-cron.schedule('* * * * *', function() {daily_cron()} 
+cron.schedule('0 9 * * *', function() {daily_cron()} 
   // Check if its match day
 ,{
     timezone: 'Europe/London'
