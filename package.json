@@ -1,7 +1,7 @@
 {
   "name": "lemmywinks-typescript",
   "description": "Lemmy Bot",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "license": "Apache Version 2.0",
   "author": "Not u/Spez",
@@ -26,16 +26,13 @@
     "axios": "^1.4.0",
     "dotenv": "^16.1.4",
     "express": "^4.16.3",
-    "google-sheets": "^0.0.7",
     "googleapis": "^118.0.0",
-    "json2md": "^2.0.0",
     "lemmy-bot": "^0.3.9",
     "moment": "^2.29.4",
     "mysql": "^2.18.1",
     "mysql2": "^3.4.0",
     "node-cron": "^3.0.2",
-    "sequelize": "^6.32.1",
-    "tablemark": "^3.0.0"
+    "sequelize": "^6.32.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",

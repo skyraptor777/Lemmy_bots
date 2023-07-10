@@ -238,18 +238,20 @@ function create_daily_posts (sequelize){
   }
   , community_id: {type: DataTypes.INTEGER}
   , post_date_number: {type: DataTypes.BIGINT, allowNull : false}
+  , post_id: {type: DataTypes.BIGINT}
 
 }, {
     tableName: table_name
   // Other model options go here
 });
-//sequelize.sync({force:true})
-  let post_type = 'The Lounge'
+//daily_posts.sync({force:true});
+
+  let post_type = 'dailys'
   if (utc_day_of_week == 5) //check if its friday
     {
       post_details.name = "💬 Free Talk Friday"
       post_details.body = "It's that time of the week!! What's the craic?"
-      post_type = "Free Talk Friday"
+      post_type = "dailys"
     }
   else{
     post_details.name = "🍻 The Lounge: Daily Discussion Thread"
@@ -261,31 +263,59 @@ function create_daily_posts (sequelize){
   let new_post: CreatePost = post_details
   let post_id = 0
   let is_posted = new Promise((resolve, reject) => {
+    //sequelize.sync({force:true});
     resolve(client.createPost(new_post))
     
   }
   ).then(value => {
     post_id = value.post_view.post.id ;console.log(post_id)
     let feature_new_post: FeaturePost = {auth: jwt, featured : true, feature_type: 'Community', post_id: value.post_view.post.id}
-    client.featurePost(feature_new_post)
+    Promise.resolve(client.featurePost(feature_new_post))
     
+    try{
 
+    unfeature_last_post(daily_posts, sequelize)
     Promise.resolve(
+  
+      
         daily_posts.create(
           {
             post_type: post_type
             , post_name:post_details.name
             , community_id : community_id
-            , post_date_number: moment().utc().format('YYYYDDMM')
+            , post_date_number: moment().utc().format('YYYYMMDD')
             , post_id : post_id
           }
           )
-          )
+        
+        ) 
+    }
+    catch (e)
+    {
+      console.log("Error Entering in the posts")
+    }
 })
   return (is_posted)
 }
 
 //
+
+async function unfeature_last_post(daily_posts, sequelize){
+  let last_post = await daily_posts.findOne({
+    // todo Update to add where clause of daily posts -- effectively add where post type is daily
+      order: [ [ 'createdAt', 'DESC' ]],
+  });
+  try {
+  console.log(`The post Id of the last post is: ${last_post.dataValues.id}`)
+  let unfeature_post: FeaturePost = {auth: jwt, featured : false, feature_type: 'Community', post_id: last_post.dataValues.post_id}
+  await client.featurePost(unfeature_post)
+  }
+  catch (e){
+    console.log ("Error occured in unfeaturing the last daily posts")
+  }
+
+
+}
 
 // =========================================
 // Cron Jobs using manual JS client due to promise issue 
@@ -296,9 +326,9 @@ function create_daily_posts (sequelize){
 async function daily_cron () {
   const { Sequelize, DataTypes } = require('sequelize');
   const sequelize = new Sequelize(jdbc_connection, {dialect: 'mysql'});
-  console.log("this is running");
+  //console.log("this is running");
   let update_everything = new Promise ((resolve, reject) =>{ resolve(update_fixture_table(sequelize))}).then(value => {
-    console.log('Run the Daily thread stuff; Friday special Free talk friday');
+    //console.log('Run the Daily thread stuff; Friday special Free talk friday');
     //let login_response = await js_client_login('sky_7_bot_testing')
     //console.log('Login response was '+login_response)
     let test = 'sky_7_bot_testing'

@@ -521,7 +521,7 @@ function format_fixtures (data: any, sqlize){
         tableName: 'utd_fixtures_test'
       // Other model options go here
     });
-    
+    utd_fixtures.sync({force : true})
     let final_insert = [{}]
     //     });
     //let insert_string = "insert ignore into `upcoming_fixtures`(`match_date_number`, `home_team`, `away_team`, `venue`, `played`, `home_team_score`, `away_team_score`, `competition`, `home_lineup`, `away_lineup`, `match_date_time`)  values"
@@ -578,7 +578,7 @@ function format_fixtures (data: any, sqlize){
         fix_list.push(current_fixture)
 
         })
-        utd_fixtures
+        Promise.resolve(utd_fixtures.bulkCreate(final_insert, {ignore_duplicates : true}))
 
         
         
