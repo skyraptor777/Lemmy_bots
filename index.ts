@@ -1,20 +1,5 @@
-// Copyright 2018 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the 'License');
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an 'AS IS' BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 import express, { Express, Request, Response } from 'express';
-import 'dotenv/config'
-import LemmyBot, { Vote, BotActions, BotTask } from 'lemmy-bot';
+import 'dotenv/config';
 import { Login, LemmyHttp, GetCommunity, EditCommunity, CreatePost, FeaturePost } from 'lemmy-js-client';
 import { describe } from 'node:test';
 import { get_list_of_fixtures } from './fixtures';
@@ -95,68 +80,6 @@ function get_some_values_from_google_sheets (sheets){
 }
 */
 
-const lemmywinx = new LemmyBot({
-  instance: 'lemmy.world',
-  credentials: {
-    username:  env_vars.USERNAME ,
-    password: env_vars.PASSWORD
-  },
-  connection: {
-    minutesUntilReprocess: 10
-  },
-  federation: {
-    allowList: [
-      {
-        instance: 'lemmy.world',
-        communities: ['sky_7_bot_testing', 'reddevils']
-      }
-    ]
-  },
-    dbFile :path.resolve(__dirname, 'chi.db'),
-
-   handlers: {
-    post: (res) => {
-      console.log(res.postView.post.name);
-    },
-    /*  mention : ({
-        mentionView:
-          {
-              comment: {creator_id, id}
-            },
-            botActions: { voteComment }
-          }) => {
-          voteComment(Vote.Upvote);
-        }
-     */
-    mention: ({
-      mentionView:
-      {
-        comment: { creator_id, id: comment_id, content }
-        , post: { id }
-      },
-      botActions: { createComment, voteComment, createPost }
-
-    }) => {
-      createComment({
-        "content": "Hi there, Lemmywinx reporting for duty",
-        "postId": id,
-        "parentId": comment_id
-      })
-      //createPost(post_template)
-      console.log(creator_id, id, content);
-    }
-
-
-    //  mention : (res) => {
-
-
-    //    console.log(res.mentionView.comment.content)
-
-    // }
-  }
-
-});
-lemmywinx.start();
 
 
 //
