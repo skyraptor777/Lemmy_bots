@@ -133,7 +133,7 @@ function update_fixture_table(sequelize) {
         client.editCommunity(edit_community_form);
       }, 5000)
     })
-    return(new_md_output)
+    return(edit_community_form)
   }
  
 
