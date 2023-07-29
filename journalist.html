@@ -1,0 +1,23 @@
+<html>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+<body>
+    <div class="pure-g">
+    <form class="pure-form pure-form-stacked" action="http://localhost:25557/handlejdata" method="post">
+        <fieldset>
+            <legend>A Stacked Form</legend>
+            <label for="journalist_name">Name</label>
+            <input type="text" id="journalist_name"  name='jname' placeholder="Name" />
+            <label for="journalist_id">Mastodon ID</label>
+            <input type="text" id="journalist_id" placeholder="ID" name='jid' />
+            <label for="stacked-state">Tier</label>
+            <select id="stacked-state" name='jtier'>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+            </select>
+            <button type="submit" class="pure-button pure-button-primary">Sign in</button>
+        </fieldset>
+    </form>
+    </div>
+</body>
+</html>

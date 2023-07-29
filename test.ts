@@ -2,8 +2,8 @@ import { describe } from 'node:test';
 import { scheduler } from 'timers/promises';
 import { createProgram } from 'typescript';
 import * as fs from 'fs';
-
 const path = require('path')
+
 let is_db_connected = false
 let env_vars = {
     USERNAME:''
@@ -65,381 +65,60 @@ try {
 */
 
 //news_sources_guide.sync({force:true})
+export function add_j_data (form_data) {
+    const path = require('path')
 
-news_sources_guide.create(
-    name: "Fabrizio Romano"
-    , post_name:post_detail
-    s.name
-    , mastodoon_id : community_id
-    , post_date_number: moment().utc().format('YYYYMMDD')
-    , post_id : post_id
-)
+    let is_db_connected = false
+    let env_vars = {
+        USERNAME:''
+        , PASSWORD:''
+        , PORT : 0
+        , JDBC_CONNECTION_STRING : ''
+    }
+    
+    let jdbc_connection = ''
+    try {
+        const raw_env_vars = fs.readFileSync(path.resolve(__dirname, 'src/env.json'), 'utf-8');
+        env_vars = JSON.parse(raw_env_vars);
+        
+      } catch (err) {
+        console.error(err);
+      }
+    
+      jdbc_connection = env_vars.JDBC_CONNECTION_STRING
+      console.log(jdbc_connection)
+      const { Sequelize, DataTypes } = require('sequelize');
+      const sequelize = new Sequelize(jdbc_connection, {dialect: 'mysql'});
+        
+      const news_sources_guide = sequelize.define('news_sources_guide', {
+        name : {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      twitter_url: {
+        type: DataTypes.STRING
+      }
+      , mastodoon_url: {type: DataTypes.STRING}
+      , mastodoon_id: {type: DataTypes.STRING}
+      , tier: {type: DataTypes.INTEGER}
+      , image_url: {type: DataTypes.STRING}
+    
+    
+    }, {
+        tableName: 'news_sources_guide'
+      // Other model options go here
+    });
 
-//sample API output to work with Delete this in production
-let sample_api_output = {
-    "get": "fixtures",
-    "parameters": {
-        "next": "5",
-        "team": "33"
-    },
-    "errors": [],
-    "results": 5,
-    "paging": {
-        "current": 1,
-        "total": 1
-    },
-    "response": [
-        {
-            "fixture": {
-                "id": 1030298,
-                "referee": null,
-                "timezone": "UTC",
-                "date": "2023-07-12T15:00:00+00:00",
-                "timestamp": 1689174000,
-                "periods": {
-                    "first": null,
-                    "second": null
-                },
-                "venue": {
-                    "id": 11603,
-                    "name": "Ullevaal Stadion",
-                    "city": "Oslo"
-                },
-                "status": {
-                    "long": "Not Started",
-                    "short": "NS",
-                    "elapsed": null
-                }
-            },
-            "league": {
-                "id": 667,
-                "name": "Friendlies Clubs",
-                "country": "World",
-                "logo": "https://media-1.api-sports.io/football/leagues/667.png",
-                "flag": null,
-                "season": 2023,
-                "round": "Club Friendlies 1"
-            },
-            "teams": {
-                "home": {
-                    "id": 33,
-                    "name": "Manchester United",
-                    "logo": "https://media-3.api-sports.io/football/teams/33.png",
-                    "winner": null
-                },
-                "away": {
-                    "id": 63,
-                    "name": "Leeds",
-                    "logo": "https://media-3.api-sports.io/football/teams/63.png",
-                    "winner": null
-                }
-            },
-            "goals": {
-                "home": null,
-                "away": null
-            },
-            "score": {
-                "halftime": {
-                    "home": null,
-                    "away": null
-                },
-                "fulltime": {
-                    "home": null,
-                    "away": null
-                },
-                "extratime": {
-                    "home": null,
-                    "away": null
-                },
-                "penalty": {
-                    "home": null,
-                    "away": null
-                }
-            }
-        },
-        {
-            "fixture": {
-                "id": 1030300,
-                "referee": null,
-                "timezone": "UTC",
-                "date": "2023-07-19T13:00:00+00:00",
-                "timestamp": 1689771600,
-                "periods": {
-                    "first": null,
-                    "second": null
-                },
-                "venue": {
-                    "id": null,
-                    "name": "Murrayfield Stadium",
-                    "city": "Edinburgh"
-                },
-                "status": {
-                    "long": "Not Started",
-                    "short": "NS",
-                    "elapsed": null
-                }
-            },
-            "league": {
-                "id": 667,
-                "name": "Friendlies Clubs",
-                "country": "World",
-                "logo": "https://media-1.api-sports.io/football/leagues/667.png",
-                "flag": null,
-                "season": 2023,
-                "round": "Club Friendlies 1"
-            },
-            "teams": {
-                "home": {
-                    "id": 33,
-                    "name": "Manchester United",
-                    "logo": "https://media-1.api-sports.io/football/teams/33.png",
-                    "winner": null
-                },
-                "away": {
-                    "id": 80,
-                    "name": "Lyon",
-                    "logo": "https://media-2.api-sports.io/football/teams/80.png",
-                    "winner": null
-                }
-            },
-            "goals": {
-                "home": null,
-                "away": null
-            },
-            "score": {
-                "halftime": {
-                    "home": null,
-                    "away": null
-                },
-                "fulltime": {
-                    "home": null,
-                    "away": null
-                },
-                "extratime": {
-                    "home": null,
-                    "away": null
-                },
-                "penalty": {
-                    "home": null,
-                    "away": null
-                }
-            }
-        },
-        {
-            "fixture": {
-                "id": 1030302,
-                "referee": null,
-                "timezone": "UTC",
-                "date": "2023-07-22T21:00:00+00:00",
-                "timestamp": 1690059600,
-                "periods": {
-                    "first": null,
-                    "second": null
-                },
-                "venue": {
-                    "id": null,
-                    "name": "MetLife Stadium",
-                    "city": "East Rutherford, New Jersey"
-                },
-                "status": {
-                    "long": "Not Started",
-                    "short": "NS",
-                    "elapsed": null
-                }
-            },
-            "league": {
-                "id": 667,
-                "name": "Friendlies Clubs",
-                "country": "World",
-                "logo": "https://media-1.api-sports.io/football/leagues/667.png",
-                "flag": null,
-                "season": 2023,
-                "round": "Club Friendlies 1"
-            },
-            "teams": {
-                "home": {
-                    "id": 42,
-                    "name": "Arsenal",
-                    "logo": "https://media-3.api-sports.io/football/teams/42.png",
-                    "winner": null
-                },
-                "away": {
-                    "id": 33,
-                    "name": "Manchester United",
-                    "logo": "https://media-1.api-sports.io/football/teams/33.png",
-                    "winner": null
-                }
-            },
-            "goals": {
-                "home": null,
-                "away": null
-            },
-            "score": {
-                "halftime": {
-                    "home": null,
-                    "away": null
-                },
-                "fulltime": {
-                    "home": null,
-                    "away": null
-                },
-                "extratime": {
-                    "home": null,
-                    "away": null
-                },
-                "penalty": {
-                    "home": null,
-                    "away": null
-                }
-            }
-        },
-        {
-            "fixture": {
-                "id": 1030307,
-                "referee": null,
-                "timezone": "UTC",
-                "date": "2023-07-26T02:30:00+00:00",
-                "timestamp": 1690338600,
-                "periods": {
-                    "first": null,
-                    "second": null
-                },
-                "venue": {
-                    "id": null,
-                    "name": "Snapdragon Stadium",
-                    "city": "San Diego, California"
-                },
-                "status": {
-                    "long": "Not Started",
-                    "short": "NS",
-                    "elapsed": null
-                }
-            },
-            "league": {
-                "id": 667,
-                "name": "Friendlies Clubs",
-                "country": "World",
-                "logo": "https://media-1.api-sports.io/football/leagues/667.png",
-                "flag": null,
-                "season": 2023,
-                "round": "Club Friendlies 1"
-            },
-            "teams": {
-                "home": {
-                    "id": 33,
-                    "name": "Manchester United",
-                    "logo": "https://media-2.api-sports.io/football/teams/33.png",
-                    "winner": null
-                },
-                "away": {
-                    "id": 1837,
-                    "name": "Wrexham",
-                    "logo": "https://media-1.api-sports.io/football/teams/1837.png",
-                    "winner": null
-                }
-            },
-            "goals": {
-                "home": null,
-                "away": null
-            },
-            "score": {
-                "halftime": {
-                    "home": null,
-                    "away": null
-                },
-                "fulltime": {
-                    "home": null,
-                    "away": null
-                },
-                "extratime": {
-                    "home": null,
-                    "away": null
-                },
-                "penalty": {
-                    "home": null,
-                    "away": null
-                }
-            }
-        },
-        {
-            "fixture": {
-                "id": 1030312,
-                "referee": null,
-                "timezone": "UTC",
-                "date": "2023-07-27T02:30:00+00:00",
-                "timestamp": 1690425000,
-                "periods": {
-                    "first": null,
-                    "second": null
-                },
-                "venue": {
-                    "id": null,
-                    "name": "NRG Stadium",
-                    "city": "Houston, Texas"
-                },
-                "status": {
-                    "long": "Not Started",
-                    "short": "NS",
-                    "elapsed": null
-                }
-            },
-            "league": {
-                "id": 667,
-                "name": "Friendlies Clubs",
-                "country": "World",
-                "logo": "https://media-1.api-sports.io/football/leagues/667.png",
-                "flag": null,
-                "season": 2023,
-                "round": "Club Friendlies 1"
-            },
-            "teams": {
-                "home": {
-                    "id": 541,
-                    "name": "Real Madrid",
-                    "logo": "https://media-3.api-sports.io/football/teams/541.png",
-                    "winner": null
-                },
-                "away": {
-                    "id": 33,
-                    "name": "Manchester United",
-                    "logo": "https://media-2.api-sports.io/football/teams/33.png",
-                    "winner": null
-                }
-            },
-            "goals": {
-                "home": null,
-                "away": null
-            },
-            "score": {
-                "halftime": {
-                    "home": null,
-                    "away": null
-                },
-                "fulltime": {
-                    "home": null,
-                    "away": null
-                },
-                "extratime": {
-                    "home": null,
-                    "away": null
-                },
-                "penalty": {
-                    "home": null,
-                    "away": null
-                }
-            }
-        }
-    ]
+    Promise.resolve(
+    news_sources_guide.create({
+        name: form_data.jname
+        , mastodoon_id : form_data.jid
+        , tier: form_data.jtier
+
+    }))
 }
-interface Fixture_list {
-    [key:string]: string;
-    comp: string;
-    opponent: string;
-    type: string; 
-    date: string;
-    score: string
-     
-} 
+//sample API output to work with Delete this in production
+
 
 /*
 

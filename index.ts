@@ -1,18 +1,17 @@
 import express, { Express, Request, Response } from 'express';
 import 'dotenv/config';
 import { Login, LemmyHttp, GetCommunity, EditCommunity, CreatePost, FeaturePost } from 'lemmy-js-client';
-import { describe } from 'node:test';
 import { get_list_of_fixtures } from './fixtures';
-import { scheduler } from 'timers/promises';
-import { createProgram } from 'typescript';
+import { add_j_data } from './test';
 import * as fs from 'fs';
 
 //import createTable from  'json-to-markdown-table'
+const bodyParser  = require( 'body-parser' )
 const path = require('path')
 const app: Express = express();
 let jwt = ''
 const baseURL = 'Https://lemmy.world';
-let client: LemmyHttp = new LemmyHttp(baseURL);
+const client: LemmyHttp = new LemmyHttp(baseURL);
 let env_vars = {
     USERNAME:''
     , PASSWORD:''
@@ -218,7 +217,7 @@ function create_daily_posts (sequelize){
       console.log("Error Entering in the posts")
     }
 })
-  return (is_posted)
+  return (Promise.resolve(is_posted))
 }
 
 //
@@ -282,7 +281,7 @@ cron.schedule('0 9 * * *', function() {daily_cron()}
 // =========================================
 
 
-
+app.use(bodyParser.urlencoded({ extended: true })); 
 
 app.get('/', (req: Request, res: Response) => {
   res.send('the user name of the bot is:- ' + env_vars.USERNAME);
@@ -291,5 +290,17 @@ app.get('/', (req: Request, res: Response) => {
 const server = app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
+
+app.get('/enterjdata', (req: Request, res: Response) => {
+  res.sendFile('journalist.html');;
+});
+
+app.post('/handlejdata', (req, res) => {
+  let data = req.body;
+  console.log(data);
+  add_j_data(data)
+  res.send("done")
+})
+
 
 module.exports = server;
