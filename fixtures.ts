@@ -168,7 +168,7 @@ function format_fixtures (data: any, sqlize){
     let final_insert = [{}]
     //     });
     //let insert_string = "insert ignore into `upcoming_fixtures`(`match_date_number`, `home_team`, `away_team`, `venue`, `played`, `home_team_score`, `away_team_score`, `competition`, `home_lineup`, `away_lineup`, `match_date_time`)  values"
-	let working_copy =   data || sample_api_output
+	let working_copy =   data 
    // console.log(data.data.response)
    
     const moment = require('moment')

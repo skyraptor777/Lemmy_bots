@@ -261,7 +261,7 @@ async function daily_cron () {
     })
   }
     )
-    Promise.resolve(update_everything)
+    await Promise.resolve(update_everything)
 }
 
 
@@ -303,15 +303,9 @@ app.post('/handlejdata', (req, res) => {
 })
 
 app.post('/createdailys', (req, res) => {
-  const { Sequelize, DataTypes } = require('sequelize');
-  const sequelize = new Sequelize(jdbc_connection, {dialect: 'mysql'});
-  let login_response = new Promise ((resolve, reject) =>
-  {return resolve(js_client_login(env == "PROD"?'reddevils':'sky_7_bot_testing'))
-  }).then((value) => {
-  create_daily_posts(sequelize).then(value => {console.log('Connection Closed')})
-})
-Promise.resolve(login_response)
 
+  daily_cron()
+  res.send("Manual Run of Dailys")
 })
 
 
