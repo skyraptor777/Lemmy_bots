@@ -26,26 +26,28 @@ try {
   const { Sequelize, DataTypes } = require('sequelize');
   const sequelize = new Sequelize(jdbc_connection, {dialect: 'mysql'});
     
-  const daily_posts = sequelize.define('daily_posts_test', {
-    post_type: {
+  const news_sources_guide = sequelize.define('news_sources_guide', {
+    name : {
     type: DataTypes.STRING,
     allowNull: false
   },
-  post_name: {
+  twitter_url: {
     type: DataTypes.STRING
   }
-  , community_id: {type: DataTypes.INTEGER}
-  , post_date_number: {type: DataTypes.BIGINT, allowNull : false}
-  , post_id: {type: DataTypes.BIGINT}
+  , mastodoon_url: {type: DataTypes.STRING}
+  , mastodoon_id: {type: DataTypes.STRING}
+  , tier: {type: DataTypes.INTEGER}
+  , image_url: {type: DataTypes.STRING}
+
 
 }, {
-    tableName: 'daily_posts_log_test'
+    tableName: 'news_sources_guide'
   // Other model options go here
 });
 
 
 
-const utd_fixtures = sequelize.define('utd_fixtures_test', {
+/*const utd_fixtures = sequelize.define('utd_fixtures_test', {
     match_date_number: {type: DataTypes.BIGINT, primaryKey: true}
     , home_team: {type: DataTypes.STRING}
     , away_team: {type: DataTypes.STRING}
@@ -60,11 +62,18 @@ const utd_fixtures = sequelize.define('utd_fixtures_test', {
   // Other model options go here
 });
 
+*/
 
+//news_sources_guide.sync({force:true})
 
-daily_posts.sync({force:true})
-
-
+news_sources_guide.create(
+    name: "Fabrizio Romano"
+    , post_name:post_detail
+    s.name
+    , mastodoon_id : community_id
+    , post_date_number: moment().utc().format('YYYYMMDD')
+    , post_id : post_id
+)
 
 //sample API output to work with Delete this in production
 let sample_api_output = {
@@ -432,7 +441,7 @@ interface Fixture_list {
      
 } 
 
-
+/*
 
 
 
@@ -479,3 +488,4 @@ function format_fixtures (data: any){
 //let fix_list = format_fixtures(sample_api_output)    
  
 
+*/
