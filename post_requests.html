@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lemmywinks Admin Panel (ALPHA) </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    
+</head>
+<body>
+    <nav class="navbar  bg-dark-subtle">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+            <img src="https://media-2.api-sports.io/football/teams/33.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+            Lemmywinks 
+          </a>
+        </div>
+      </nav>
+    <div class="container">
+    <table id="dataTable" class="table table-striped" >
+        <!-- The table will be populated by JavaScript -->
+    </table>
+
+    <form action="http://localhost:25557/handlefdata" method="post">
+        <div class="mb-3">
+          <label for="the_main_id" class="form-label">Enter In Post ID</label>
+          <input type="text" class="form-control" id="the_main_id" name='pname' aria-describedby="emailHelp">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+</div>
+    <script>
+        
+        // Function to create an HTML table from JSON data
+        function createTableFromJSON(jsonData) {
+            var table = document.getElementById("dataTable");
+            var headers = Object.keys(jsonData[0]);
+            
+            // Create the header row
+            var headerRow = table.insertRow(0);
+            for (var i = 0; i < headers.length; i++) {
+                var headerCell = headerRow.insertCell(i);
+                headerCell.innerHTML = headers[i];
+            }
+            
+            // Create rows and cells for the data
+            for (var i = 0; i < jsonData.length; i++) {
+                var dataRow = table.insertRow(i + 1);
+                for (var j = 0; j < headers.length; j++) {
+                    var dataCell = dataRow.insertCell(j);
+                    dataCell.innerHTML = jsonData[i][headers[j]];
+                }
+            }
+        }
+
+        // Function to make the GET request and handle the response
+        function getDataAndCreateTable() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/jpulltest", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log(xhr.responseText);
+                    var jsonData = JSON.parse(xhr.responseText);
+                    createTableFromJSON(jsonData);
+                }
+            };
+            xhr.send();
+        }
+
+        // Load the data and create the table on page load
+        window.onload = function () {
+            getDataAndCreateTable();
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+</body>
+</html>

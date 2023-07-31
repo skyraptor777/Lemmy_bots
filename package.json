@@ -28,6 +28,7 @@
     "express": "^4.16.3",
     "googleapis": "^118.0.0",
     "lemmy-bot": "^0.3.9",
+    "masto": "^6.0.2",
     "moment": "^2.29.4",
     "mysql": "^2.18.1",
     "mysql2": "^3.4.0",
