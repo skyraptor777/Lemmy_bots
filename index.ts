@@ -2,8 +2,9 @@ import express, { Express, Request, Response } from 'express';
 import 'dotenv/config';
 import { Login, LemmyHttp, GetCommunity, EditCommunity, CreatePost, FeaturePost } from 'lemmy-js-client';
 import { get_list_of_fixtures } from './fixtures';
-import { add_j_data } from './test';
+import { add_j_data, get_tweets, journalist_data_record } from './test';
 import * as fs from 'fs';
+import { validateHeaderValue } from 'http';
 
 //import createTable from  'json-to-markdown-table'
 const bodyParser  = require( 'body-parser' )
@@ -11,6 +12,7 @@ const path = require('path')
 const app: Express = express();
 let jwt = ''
 const baseURL = 'Https://lemmy.world';
+const cron = require('node-cron');
 const client: LemmyHttp = new LemmyHttp(baseURL);
 let env_vars = {
     USERNAME:''
@@ -167,7 +169,7 @@ function create_daily_posts (sequelize){
   // Other model options go here
 });
 //daily_posts.sync({force:true});
-
+//109893795831754803
   let post_type = 'dailys'
   if (utc_day_of_week == 5) //check if its friday
     {
@@ -239,6 +241,51 @@ async function unfeature_last_post(daily_posts, sequelize){
 
 }
 
+
+function post_tweet(tweet_id){
+  const { Sequelize, DataTypes } = require('sequelize');
+  const sequelize = new Sequelize(jdbc_connection, { dialect: 'mysql' });
+
+  console.log("id here is "+tweet_id)
+  const list_of_tweets = sequelize.define('list_of_tweets', {
+    post_id: {
+        type: DataTypes.STRING,
+        allowNull: false
+        ,primaryKey: true
+    },
+    account_id: {
+        type: DataTypes.STRING
+    }
+    , account_display_name: { type: DataTypes.STRING }
+    , tweet_url: { type: DataTypes.STRING }
+    , mastodoon_url: { type: DataTypes.STRING }
+    , post_content: { type: DataTypes.TEXT  }
+    , first_id_in_batch: { type: DataTypes.STRING }
+    , is_reviewed: { type: DataTypes.BOOLEAN }
+    , is_posted: { type: DataTypes.BOOLEAN }
+
+
+}, {
+    tableName: 'list_of_tweets'
+    // Other model options go here
+});
+  
+  let last_post = list_of_tweets.findOne({
+    // todo Update to add where clause of daily posts -- effectively add where post type is daily
+      where: {post_id: tweet_id},
+  }).then(value => {
+
+    js_client_login(env == "PROD"?'reddevils':'sky_7_bot_testing').then(()=>{
+      let unfeature_post: CreatePost = {auth: jwt, url : value.dataValues.tweet_url, community_id:9451, name:`[${value.dataValues.account_display_name}] ${value.dataValues.post_content.replace( /(<([^>]+)>)/ig, '').substring(0,90)}...`} //${value.dataValues.post_content.strip(0,2).replace( /(<([^>]+)>)/ig, '')}
+      console.log(unfeature_post); //
+      Promise.resolve(client.createPost(unfeature_post)).catch(reason => (console.log(reason)))
+    }
+      )
+
+})
+ Promise.resolve(last_post)
+}
+
 // =========================================
 // Cron Jobs using manual JS client due to promise issue 
 //
@@ -266,7 +313,7 @@ async function daily_cron () {
 
 
 
-var cron = require('node-cron');
+
 cron.schedule('0 9 * * *', function() {daily_cron()} 
   // Check if its match day
 ,{
@@ -292,7 +339,11 @@ const server = app.listen(PORT, () => {
 });
 
 app.get('/enterjdata', (req: Request, res: Response) => {
-  res.sendFile('journalist.html');;
+  res.sendFile('journalist.html', { root: __dirname });;
+});
+
+app.get('/post_tweets', (req: Request, res: Response) => {
+  res.sendFile('post_requests.html', { root: __dirname });;
 });
 
 app.post('/handlejdata', (req, res) => {
@@ -302,10 +353,28 @@ app.post('/handlejdata', (req, res) => {
   res.send("done")
 })
 
-app.post('/createdailys', (req, res) => {
-
+app.get('/createdailys', (req, res) => {
   daily_cron()
   res.send("Manual Run of Dailys")
+})
+
+app.get('/jtest', (req, res) => {
+  journalist_data_record()
+  res.send("Done")
+})
+ 
+app.get('/jpulltest', (req, res) => {
+  
+  Promise.resolve(get_tweets()).then(value => {res.send(value)})
+
+})
+
+
+app.post('/handlefdata', (req, res) => {
+  let data = req.body;
+  console.log(data);
+  post_tweet(data.pname)
+  res.send("done")
 })
 
 

@@ -119,11 +119,11 @@ function callback(err) {
 	axios
 		.request(options)
 		.then(function (data:any) {
-            //console.log(data)
+            console.log(data)
             let formatted_response = format_fixtures(data.data, sqlize) 
             
             const markdown_response:string = send_fixtures(formatted_response);
-            //console.log(markdown_response)
+            console.log(markdown_response)
             //return markdown_response || ''
             output_to_export = markdown_response 
 			/*
