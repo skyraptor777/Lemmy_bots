@@ -50,7 +50,7 @@ try {
 	PORT = env_vars.PORT || 25557;
     if (env_vars.USERNAME =="__lemmywinks_bot"){
         env = 'PROD'; //should not be needed but just in case
-        community_id = 9451//2317 // community id for c/RedDevils
+        community_id = 2317 // community id for c/RedDevils
 
     }
 
