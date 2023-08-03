@@ -321,6 +321,13 @@ cron.schedule('0 9 * * *', function() {daily_cron()}
     , scheduled : true
 });
 
+cron.schedule('*/15 * * * *', function() {journalist_data_record()()} 
+  // Check if its match day
+,{
+    timezone: 'Europe/London'
+    , scheduled : true
+});
+
 
             
 // =========================================
